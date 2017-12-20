@@ -47,19 +47,19 @@ Plugin 'ReflexxesTypeII': loading...
 Plugin 'ReflexxesTypeII': load succeeded.
 Plugin 'RemoteApi': loading...
 Starting a remote API server on port 19999
-0x16568c0 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0xa818c0) ): Attempt to set a screen on a child window.
-0x1656500 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0xa818c0) ): Attempt to set a screen on a child window.
-0x1653480 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0xa818c0) ): Attempt to set a screen on a child window.
-0x16525a0 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0xa818c0) ): Attempt to set a screen on a child window.
-0x16520c0 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0xa818c0) ): Attempt to set a screen on a child window.
-0x1650d40 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0xa818c0) ): Attempt to set a screen on a child window.
-0x1650430 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0xa818c0) ): Attempt to set a screen on a child window.
-0x103b3e0 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0xa818c0) ): Attempt to set a screen on a child window.
-0x1650920 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0xa818c0) ): Attempt to set a screen on a child window.
-0x1651220 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0xa818c0) ): Attempt to set a screen on a child window.
-0x1651be0 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0xa818c0) ): Attempt to set a screen on a child window.
-0x1652fa0 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0xa818c0) ): Attempt to set a screen on a child window.
-0x1653e40 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0xa818c0) ): Attempt to set a screen on a child window.
+0x32bb450 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
+0x32bb090 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
+0x32b8010 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
+0x32b7130 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
+0x32b6c50 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
+0x32b58d0 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
+0x32b5000 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
+0x2a68310 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
+0x32b54b0 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
+0x32b5db0 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
+0x32b6770 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
+0x32b7b30 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
+0x32b89d0 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
 Plugin 'RemoteApi': load succeeded.
 Plugin 'SDF': loading...
 Plugin 'SDF': load succeeded.
@@ -82,6 +82,15 @@ Initializing the Bullet physics engine in plugin 'DynamicsBullet_2_78'...
 Engine version: 2.78
 Plugin version: 9
 Initialization successful.
+Initializing the Bullet physics engine in plugin 'DynamicsBullet_2_78'...
+Engine version: 2.78
+Plugin version: 9
+Initialization successful.
+Initializing the Bullet physics engine in plugin 'DynamicsBullet_2_78'...
+Engine version: 2.78
+Plugin version: 9
+Initialization successful.
+Add-on script 'vrepAddOnScript-addOnScriptDemo.lua' was loaded.
 Initializing the Bullet physics engine in plugin 'DynamicsBullet_2_78'...
 Engine version: 2.78
 Plugin version: 9
