@@ -47,68 +47,18 @@ Plugin 'ReflexxesTypeII': loading...
 Plugin 'ReflexxesTypeII': load succeeded.
 Plugin 'RemoteApi': loading...
 Starting a remote API server on port 19999
-0x32bb450 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
-0x32bb090 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
-0x32b8010 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
-0x32b7130 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
-0x32b6c50 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
-0x32b58d0 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
-0x32b5000 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
-0x2a68310 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
-0x32b54b0 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
-0x32b5db0 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
-0x32b6770 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
-0x32b7b30 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
-0x32b89d0 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x26ea690) ): Attempt to set a screen on a child window.
-Plugin 'RemoteApi': load succeeded.
-Plugin 'SDF': loading...
-Plugin 'SDF': load succeeded.
-Plugin 'SimpleFilter': loading...
-Plugin 'SimpleFilter': load succeeded.
-Plugin 'SurfaceReconstruction': loading...
-Plugin 'SurfaceReconstruction': load succeeded.
-Plugin 'Urdf-a': loading...
-Plugin 'Urdf-a': load succeeded.
-Plugin 'Urdf': loading...
-Plugin 'Urdf': load succeeded.
-Plugin 'Vision': loading...
-Plugin 'Vision': load succeeded.
-Using the 'MeshCalc' plugin.
-Initializing the Bullet physics engine in plugin 'DynamicsBullet_2_78'...
-Engine version: 2.78
-Plugin version: 9
-Initialization successful.
-Initializing the Bullet physics engine in plugin 'DynamicsBullet_2_78'...
-Engine version: 2.78
-Plugin version: 9
-Initialization successful.
-Initializing the Bullet physics engine in plugin 'DynamicsBullet_2_78'...
-Engine version: 2.78
-Plugin version: 9
-Initialization successful.
-Initializing the Bullet physics engine in plugin 'DynamicsBullet_2_78'...
-Engine version: 2.78
-Plugin version: 9
-Initialization successful.
-Add-on script 'vrepAddOnScript-addOnScriptDemo.lua' was loaded.
-Initializing the Bullet physics engine in plugin 'DynamicsBullet_2_78'...
-Engine version: 2.78
-Plugin version: 9
-Initialization successful.
-Initializing the Bullet physics engine in plugin 'DynamicsBullet_2_78'...
-Engine version: 2.78
-Plugin version: 9
-Initialization successful.
-Initializing the Bullet physics engine in plugin 'DynamicsBullet_2_78'...
-Engine version: 2.78
-Plugin version: 9
-Initialization successful.
-Initializing the Bullet physics engine in plugin 'DynamicsBullet_2_78'...
-Engine version: 2.78
-Plugin version: 9
-Initialization successful.
-Initializing the Bullet physics engine in plugin 'DynamicsBullet_2_78'...
-Engine version: 2.78
-Plugin version: 9
-Initialization successful.
-Simulator ended.
+0x2bba810 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x1fea670) ): Attempt to set a screen on a child window.
+0x2bba450 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x1fea670) ): Attempt to set a screen on a child window.
+0x2bb73d0 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x1fea670) ): Attempt to set a screen on a child window.
+0x2bb64f0 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x1fea670) ): Attempt to set a screen on a child window.
+0x2bb6010 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x1fea670) ): Attempt to set a screen on a child window.
+0x2bb4c90 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x1fea670) ): Attempt to set a screen on a child window.
+0x2bb43c0 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x1fea670) ): Attempt to set a screen on a child window.
+0x259fe20 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x1fea670) ): Attempt to set a screen on a child window.
+0x2bb4870 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x1fea670) ): Attempt to set a screen on a child window.
+0x2bb5170 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x1fea670) ): Attempt to set a screen on a child window.
+0x2bb5b30 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x1fea670) ): Attempt to set a screen on a child window.
+0x2bb6ef0 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x1fea670) ): Attempt to set a screen on a child window.
+0x2bb7d90 void QWindowPrivate::setTopLevelScreen(QScreen*, bool) ( QScreen(0x1fea670) ): Attempt to set a screen on a child window.
+qt.network.ssl: QSslSocket: cannot resolve SSLv2_client_method
+qt.network.ssl: QSslSocket: cannot resolve SSLv2_server_method

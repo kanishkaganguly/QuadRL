@@ -20,18 +20,19 @@ def main():
         vrep.simxFinish(clientID)
         return
 
-    # Load V-REP scene
-    print("Loading scene...")
-    vrep.simxLoadScene(clientID, scene_name, 0xFF, vrep.simx_opmode_blocking)
-
     # Setup V-REP simulation
     print("Setting simulator to async mode...")
     vrep.simxSynchronous(clientID, True)
-    dt = .05
+    dt = 0.01
     vrep.simxSetFloatingParameter(clientID,
                                   vrep.sim_floatparam_simulation_time_step,
                                   dt,  # specify a simulation time step
                                   vrep.simx_opmode_oneshot)
+
+    # Load V-REP scene
+    print("Loading scene...")
+    vrep.simxLoadScene(clientID, scene_name, 0xFF, vrep.simx_opmode_blocking)
+
     # Get quadrotor handle
     err, quad_handle = vrep.simxGetObjectHandle(clientID, quad_name, vrep.simx_opmode_blocking)
 
