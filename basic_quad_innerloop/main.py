@@ -47,18 +47,18 @@ class DQN(nn.Module):
         self.linear1 = nn.Linear(input, hidden)
         self.linear2 = nn.Linear(hidden, hidden)
 
-        #self.bn1 = nn.BatchNorm1d(input)
+        self.bn1 = nn.BatchNorm1d(input)
 
-        #self.bn2 = nn.BatchNorm1d(hidden)
+        self.bn2 = nn.BatchNorm1d(hidden)
 
         self.linear3 = nn.Linear(hidden, output)
 
     def forward(self, x):
+        x = self.bn1(x)
         x = self.linear1(x).view(-1, self.hidden)
-
         x = F.relu(x)
         x = self.linear2(x)
-        #x = self.bn2(x)
+        x = self.bn2(x)
         x = F.relu(x)
         x = self.linear3(x)
         return x
@@ -67,10 +67,11 @@ class DQN(nn.Module):
 
 def is_valid_state(pos_start, pos_current, euler_current):
     valid = True
-    if pos_current[2] < 1.0:
+
+    if pos_current[2] < 2.0:
         valid = False
     diff = np.fabs(pos_current - pos_start)
-    if np.amax(diff[:3]) > 0.7:
+    if np.amax(diff[:3]) > 10.:
         valid = False
     if check_quad_flipped(euler_current):
         valid = False
@@ -82,26 +83,19 @@ def generate_forces(model, state,learning_rate):
     V=model(state)
     V.backward()
 
-    return list( np.sign(state.grad.data[0,-5:-1].numpy()) *0.1)
+    return list( np.sign(state.grad.data[0,-5:-1].numpy()) *learning_rate)
 
-def conduct_action(forces, action):
-    if action <= 3:
-        forces[action] = forces[action] + 1. if forces[action] < 20 else forces[action]
-    else:
-        forces[action - 4] = forces[action - 4] - 1. if forces[action - 4] >= 1 else 0.
-    return forces
 
 
 
 
 def apply_forces(forces, delta_forces):
     for i in range(4):
-        if forces[i]<.1 and delta_forces[i]<0.:
-            continue
-        elif forces[i]>=20 and delta_forces[i]>0.:
-            continue
-        else:
-            forces[i]+=delta_forces[i]
+        forces[i]+=delta_forces[i]
+        if forces[i]>20:
+            forces[i]=20
+        if forces[i]<0.:
+            forces[i]=0.
     return forces
 
 def reset(clientID):
@@ -158,7 +152,7 @@ def DQN_update2(model, memory, batch_size, GAMMA, optimizer):
     expected_state_action_values = (next_state_values * GAMMA) + reward_batch
 
     # Compute Huber loss
-    loss = F.mse_loss(state_action_values, expected_state_action_values)
+    loss = F.smooth_l1_loss(state_action_values, expected_state_action_values)
 
     # Optimize the model
     optimizer.zero_grad()
@@ -177,7 +171,8 @@ def vrep_exit(clientID):
 
 
 def check_quad_flipped(euler):
-    if abs(euler[0]) > 2. or abs(euler[1]) > 2.:
+    
+    if abs(euler[0]) > 20. or abs(euler[1]) > 20.:
         print("Quad flipped")
         return True
 
@@ -198,7 +193,7 @@ def main():
     # Setup V-REP simulation
     print("Setting simulator to async mode...")
     vrep.simxSynchronous(clientID, True)
-    dt = .0005
+    dt = .001
     vrep.simxSetFloatingParameter(clientID,
                                   vrep.sim_floatparam_simulation_time_step,
                                   dt,  # specify a simulation time step
@@ -228,23 +223,23 @@ def main():
     err, euler_old = vrep.simxGetObjectOrientation(clientID, quad_handle, -1, vrep.simx_opmode_buffer)
 
     pos_old = np.asarray(pos_old)
-    euler_old = np.asarray(euler_old)
+    euler_old = np.asarray(euler_old)*10.
 
     pos_start = pos_old
 
     # hyper parameters
 
-    n_input = 6
+    n_input = 3#6
     n_forces=4
     #n_action = 8
-    hidden = 64
-    memory = ReplayMemory(10000)
-    batch_size = 512
+    hidden = 256
+    memory = ReplayMemory(100000)
+    batch_size = 1024
     learning_rate = .01
-    eps = 0.15
+    eps = 0.1
     gamma = 0.9
 
-    init_f=10.
+    init_f=8.
 
     net = DQN(n_input + n_forces, hidden, 1)
 
@@ -282,21 +277,25 @@ def main():
         err, pos_new = vrep.simxGetObjectPosition(clientID, quad_handle, -1, vrep.simx_opmode_buffer)
         err, euler_new = vrep.simxGetObjectOrientation(clientID, quad_handle, -1, vrep.simx_opmode_buffer)
 
+
         pos_new = np.asarray(pos_new)
-        euler_new = np.asarray(euler_new)
+        euler_new = np.asarray(euler_new)*10
+        #euler_new[2]/=100
 
         valid = is_valid_state(pos_start, pos_new, euler_new)
         if valid:
-            next_state = torch.FloatTensor(np.concatenate([pos_new - pos_old, euler_new - euler_old]))
+            #next_state = torch.FloatTensor(np.concatenate([pos_new - pos_old, euler_new - euler_old]))
+            next_state = torch.FloatTensor(euler_new - euler_old)
+
             next_extended_state=torch.FloatTensor([np.concatenate([next_state,np.asarray(propeller_vels)])])
         else:
             next_state = None
             next_extended_state = None
 
         reward_pos = np.float32(-np.linalg.norm(pos_new - pos_old)) if next_state is not None else np.float32(-50.)
-        reward_alpha = np.float32(-np.linalg.norm(0.0 - euler_new[0]*10)) if next_state is not None else np.float32(-50./2.)
-        reward_beta = np.float32(-np.linalg.norm(0.0 - euler_new[1]*10)) if next_state is not None else np.float32(-50./2.)
-        reward_gamma = np.float32(-np.linalg.norm(0.0 - euler_new[2]*10)) if next_state is not None else np.float32(-20.)
+        reward_alpha = np.float32(-np.linalg.norm(0.0 - euler_new[0])) if not check_quad_flipped(euler_new) else np.float32(-50./2.)
+        reward_beta = np.float32(-np.linalg.norm(0.0 - euler_new[1])) if not check_quad_flipped(euler_new) else np.float32(-50./2.)
+        reward_gamma = np.float32(-np.linalg.norm(0.0 - euler_new[2])) if not check_quad_flipped(euler_new) else np.float32(-20.)
         reward = reward_alpha + reward_beta + reward_gamma
 
         memory.push(extended_state, torch.from_numpy(np.asarray([delta_forces],dtype=np.float32)), next_extended_state,
@@ -341,9 +340,9 @@ def main():
             # Get quadrotor initial position and orientation
             err, pos_old = vrep.simxGetObjectPosition(clientID, quad_handle, -1, vrep.simx_opmode_buffer)
             err, euler_old = vrep.simxGetObjectOrientation(clientID, quad_handle, -1, vrep.simx_opmode_buffer)
-
+            euler_old=euler_old
             pos_old = np.asarray(pos_old)
-            euler_old = np.asarray(euler_old)
+            euler_old = np.asarray(euler_old)*10.
             pos_start = pos_old
 
             state = [0 for i in range(n_input)]
