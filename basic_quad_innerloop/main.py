@@ -76,12 +76,13 @@ def is_valid_state(pos_start, pos_current, euler_current):
         valid = False
     return valid
 
-def generate_forces(model, state):
+def generate_forces(model, state,learning_rate):
     state=Variable(state, requires_grad=True)
+    model.eval()
     V=model(state)
     V.backward()
 
-    return list( np.sign(-state.grad.data[0,-5:-1].numpy() ))
+    return list( np.sign(state.grad.data[0,-5:-1].numpy()) *0.1)
 
 def conduct_action(forces, action):
     if action <= 3:
@@ -113,6 +114,8 @@ def reset(clientID):
 
 
 def DQN_update2(model, memory, batch_size, GAMMA, optimizer):
+    model.train()
+
     if len(memory) < 10:
         return
     elif len(memory) < batch_size:
@@ -174,7 +177,7 @@ def vrep_exit(clientID):
 
 
 def check_quad_flipped(euler):
-    if abs(euler[0]) > 1. or abs(euler[1]) > 1.:
+    if abs(euler[0]) > 2. or abs(euler[1]) > 2.:
         print("Quad flipped")
         return True
 
@@ -238,7 +241,7 @@ def main():
     memory = ReplayMemory(10000)
     batch_size = 512
     learning_rate = .01
-    eps = 0.1
+    eps = 0.15
     gamma = 0.9
 
     init_f=10.
@@ -259,7 +262,7 @@ def main():
         # epsilon greedy
         r = random.random()
         if r > eps:
-            delta_forces=generate_forces(net,extended_state)
+            delta_forces=generate_forces(net,extended_state,learning_rate)
         else:
             delta_forces = [float(random.randint(-1, 1)) for i in range(4)]
         # Set propeller thrusts
@@ -290,8 +293,11 @@ def main():
             next_state = None
             next_extended_state = None
 
-        reward = np.float32(-np.linalg.norm(pos_new - pos_old)) if next_state is not None else np.float32(-50.)
-
+        reward_pos = np.float32(-np.linalg.norm(pos_new - pos_old)) if next_state is not None else np.float32(-50.)
+        reward_alpha = np.float32(-np.linalg.norm(0.0 - euler_new[0]*10)) if next_state is not None else np.float32(-50./2.)
+        reward_beta = np.float32(-np.linalg.norm(0.0 - euler_new[1]*10)) if next_state is not None else np.float32(-50./2.)
+        reward_gamma = np.float32(-np.linalg.norm(0.0 - euler_new[2]*10)) if next_state is not None else np.float32(-20.)
+        reward = reward_alpha + reward_beta + reward_gamma
 
         memory.push(extended_state, torch.from_numpy(np.asarray([delta_forces],dtype=np.float32)), next_extended_state,
                                 torch.from_numpy(np.asarray([[reward]])))
@@ -308,6 +314,7 @@ def main():
         DQN_update2(net, memory, batch_size, gamma, optim)
 
         if not valid:
+            print('reset')
             # reset
             reset(clientID)
             print("Loading scene...")
