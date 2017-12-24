@@ -333,9 +333,10 @@ def main():
 
         # Perform one step of the optimization (on the target network)
 
-        DQN_update2(net, memory, batch_size, gamma, optim)
+        #DQN_update2(net, memory, batch_size, gamma, optim)
 
         if not valid:
+            DQN_update2(net, memory, batch_size, gamma, optim)
             print('reset')
             # reset
             reset(clientID)
