@@ -43,24 +43,32 @@ class DQN(nn.Module):
 
     def __init__(self, input, hidden, output=1):
         super(DQN, self).__init__()
-        self.hidden = hidden
+
         self.linear1 = nn.Linear(input, hidden)
         self.linear2 = nn.Linear(hidden, hidden)
+        #self.linear3 = nn.Linear(hidden, hidden)
 
         self.bn1 = nn.BatchNorm1d(input)
 
         self.bn2 = nn.BatchNorm1d(hidden)
+        #self.bn3 = nn.BatchNorm1d(hidden)
 
-        self.linear3 = nn.Linear(hidden, output)
+        self.linear_final = nn.Linear(hidden, output)
 
     def forward(self, x):
         x = self.bn1(x)
-        x = self.linear1(x).view(-1, self.hidden)
+        x = self.linear1(x)
         x = F.relu(x)
         x = self.linear2(x)
         x = self.bn2(x)
         x = F.relu(x)
-        x = self.linear3(x)
+
+
+        #x = self.linear3(x)
+        #x = self.bn3(x)
+        #x = F.relu(x)
+
+        x = self.linear_final(x)
         return x
 
 
@@ -83,7 +91,7 @@ def generate_forces(model, state,learning_rate):
     V=model(state)
     V.backward()
 
-    return list( np.sign(state.grad.data[0,-5:-1].numpy()) *learning_rate)
+    return list( np.sign(state.grad.data[0,-5:-1].numpy()) *1.)
 
 
 
@@ -158,7 +166,7 @@ def DQN_update2(model, memory, batch_size, GAMMA, optimizer):
     optimizer.zero_grad()
     loss.backward()
     for param in model.parameters():
-        param.grad.data.clamp_(-1, 1)
+        param.grad.data.clamp_(-.1, .1)
     optimizer.step()
 
 
@@ -171,7 +179,7 @@ def vrep_exit(clientID):
 
 
 def check_quad_flipped(euler):
-    
+
     if abs(euler[0]) > 20. or abs(euler[1]) > 20.:
         print("Quad flipped")
         return True
@@ -229,17 +237,16 @@ def main():
 
     # hyper parameters
 
-    n_input = 3#6
+    n_input = 6
     n_forces=4
     #n_action = 8
     hidden = 256
-    memory = ReplayMemory(100000)
-    batch_size = 1024
+    batch_size = 512
     learning_rate = .01
     eps = 0.1
     gamma = 0.9
 
-    init_f=8.
+    init_f=7.
 
     net = DQN(n_input + n_forces, hidden, 1)
 
@@ -250,7 +257,7 @@ def main():
     propeller_vels = [init_f, init_f, init_f, init_f]
 
     extended_state=torch.cat((state,torch.from_numpy(np.asarray([propeller_vels], dtype=np.float32))),1)
-
+    memory = ReplayMemory(10000)
 
     while (vrep.simxGetConnectionId(clientID) != -1):
 
@@ -284,20 +291,36 @@ def main():
 
         valid = is_valid_state(pos_start, pos_new, euler_new)
         if valid:
-            #next_state = torch.FloatTensor(np.concatenate([pos_new - pos_old, euler_new - euler_old]))
-            next_state = torch.FloatTensor(euler_new - euler_old)
+            next_state = torch.FloatTensor(np.concatenate([euler_new, pos_new - pos_old]))
+            #next_state = torch.FloatTensor(euler_new )
 
             next_extended_state=torch.FloatTensor([np.concatenate([next_state,np.asarray(propeller_vels)])])
         else:
             next_state = None
             next_extended_state = None
 
-        reward_pos = np.float32(-np.linalg.norm(pos_new - pos_old)) if next_state is not None else np.float32(-50.)
-        reward_alpha = np.float32(-np.linalg.norm(0.0 - euler_new[0])) if not check_quad_flipped(euler_new) else np.float32(-50./2.)
-        reward_beta = np.float32(-np.linalg.norm(0.0 - euler_new[1])) if not check_quad_flipped(euler_new) else np.float32(-50./2.)
-        reward_gamma = np.float32(-np.linalg.norm(0.0 - euler_new[2])) if not check_quad_flipped(euler_new) else np.float32(-20.)
-        reward = reward_alpha + reward_beta + reward_gamma
+        reward_acc = np.float32(-np.linalg.norm(pos_new - pos_old)) if next_state is not None else np.float32(-10.)
 
+        reward_alpha = np.float32(-np.fabs(euler_new[0])) if not check_quad_flipped(euler_new) else np.float32(-10.)
+        reward_beta = np.float32(-np.fabs( euler_new[1])) if not check_quad_flipped(euler_new) else np.float32(-10.)
+        reward_gamma = np.float32(-np.fabs(euler_new[2])) if not check_quad_flipped(euler_new) else np.float32(-5.)
+
+        reward_alpha_acc = np.float32(-np.fabs(euler_new[0]-euler_old[0])) if not check_quad_flipped(euler_new) else np.float32(-10.)
+        reward_beta_acc = np.float32(-np.fabs( euler_new[1]-euler_old[1])) if not check_quad_flipped(euler_new) else np.float32(-10.)
+        reward_gamma_acc = np.float32(-np.fabs(euler_new[2]-euler_old[2])) if not check_quad_flipped(euler_new) else np.float32(-5.)
+
+        reward = reward_alpha + reward_beta + reward_gamma + reward_acc+  reward_alpha_acc*10. + reward_beta_acc*10. + reward_gamma_acc*10.
+
+        if not check_quad_flipped(euler_new) and not valid:
+            print('Success.')
+            reward=10.
+
+        #reward_pos=-np.linalg.norm(pos_new-pos_start)
+
+
+        if reward <-10.:
+            reward=-10.
+        reward=np.float32(reward)
         memory.push(extended_state, torch.from_numpy(np.asarray([delta_forces],dtype=np.float32)), next_extended_state,
                                 torch.from_numpy(np.asarray([[reward]])))
 
@@ -351,6 +374,8 @@ def main():
             propeller_vels = [init_f, init_f, init_f, init_f]
 
             extended_state = torch.cat((state, torch.FloatTensor(np.asarray([propeller_vels]))), 1)
+            print('duration: ',len(memory))
+            memory = ReplayMemory(10000)
 
 
 if __name__ == '__main__':
